@@ -8,7 +8,7 @@ use Asko\Toretto\Core\Attributes\Query;
 use Dom\Node;
 use DOM\NodeList;
 
-#[Query('//*[@t-if]')]
+#[Query('//*[@if]')]
 class IfAttributeParser extends BaseAttributeParser
 {
     /**
@@ -19,8 +19,8 @@ class IfAttributeParser extends BaseAttributeParser
     public function parse(NodeList &$nodeList): void
     {
         foreach($nodeList as $node) {
-            $if = $node->getAttribute('t-if');
-            $node->removeAttribute('t-if');
+            $if = $node->getAttribute('if');
+            $node->removeAttribute('if');
 
             if (empty($this->parseExpression($if))) {
                 $node->parentNode->removeChild($node);

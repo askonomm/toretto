@@ -19,18 +19,18 @@ Still very much a work in progress, and specification may change.
 <!DOCTYPE html>
 <html>
     <head>
-        <title t-inner-text="{title}"></title>
+        <title inner-text="{title}"></title>
     </head>
     <body>
-        <h1 t-inner-text="{title}"></h1>
+        <h1 inner-text="{title}"></h1>
         
-        <div class="posts" t-if="posts">
-            <div t-for="posts" t-as="post">
+        <div class="posts" if="posts">
+            <div foreach="posts as post">
                 <h2 class="post-title">
-                    <a :href="/blog/{post.url}" t-inner-text="{post.title | capitalize}"></a>
+                    <a :href="/blog/{post.url}" inner-text="{post.title | capitalize}"></a>
                 </h2>
-                <div class="post-date" t-inner-text="{post.date | date:yyyy-MM-dd}"></div>
-                <div class="post-content" t-inner-html="{post.body}"></div>
+                <div class="post-date" inner-text="{post.date | date:yyyy-MM-dd}"></div>
+                <div class="post-content" inner-html="{post.body}"></div>
             </div>
         </div>
     </body>

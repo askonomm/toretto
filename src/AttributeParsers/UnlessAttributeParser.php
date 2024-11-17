@@ -8,7 +8,7 @@ use Asko\Toretto\Core\Attributes\Query;
 use Dom\Node;
 use DOM\NodeList;
 
-#[Query('//*[@t-unless]')]
+#[Query('//*[@unless]')]
 class UnlessAttributeParser extends BaseAttributeParser
 {
     /**
@@ -19,8 +19,8 @@ class UnlessAttributeParser extends BaseAttributeParser
     public function parse(NodeList &$nodeList): void
     {
         foreach($nodeList as $node) {
-            $unless = $node->getAttribute('t-unless');
-            $node->removeAttribute('t-unless');
+            $unless = $node->getAttribute('unless');
+            $node->removeAttribute('unless');
 
             if (!empty($this->parseExpression($unless))) {
                 $node->parentNode->removeChild($node);

@@ -9,25 +9,25 @@ class UnlessAttributeParserTest extends TestCase
 {
     public function testParse(): void
     {
-        $toretto = new Toretto("<div t-unless=\"test\"></div>", ["test" => "test"]);
+        $toretto = new Toretto("<div unless=\"test\"></div>", ["test" => "test"]);
         $this->assertEquals("", $toretto->toHtml());
     }
 
     public function testParseFalse(): void
     {
-        $toretto = new Toretto("<div t-unless=\"test\">hello</div>", ["test" => false]);
+        $toretto = new Toretto("<div unless=\"test\">hello</div>", ["test" => false]);
         $this->assertEquals("<div>hello</div>", $toretto->toHtml());
     }
 
     public function testParseCollection(): void
     {
-        $toretto = new Toretto("<div t-unless=\"test\"></div>", ["test" => ["test"]]);
+        $toretto = new Toretto("<div unless=\"test\"></div>", ["test" => ["test"]]);
         $this->assertEquals("", $toretto->toHtml());
     }
 
     public function testParseEmptyCollection(): void
     {
-        $toretto = new Toretto("<div t-unless=\"test\">hello</div>", ["test" => []]);
+        $toretto = new Toretto("<div unless=\"test\">hello</div>", ["test" => []]);
         $this->assertEquals("<div>hello</div>", $toretto->toHtml());
     }
 }

@@ -8,7 +8,7 @@ use Asko\Toretto\Core\Attributes\Query;
 use Dom\Node;
 use Dom\NodeList;
 
-#[Query('//*[@t-inner-text]')]
+#[Query('//*[@inner-text]')]
 class InnerTextAttributeParser extends BaseAttributeParser
 {
     /**
@@ -19,9 +19,9 @@ class InnerTextAttributeParser extends BaseAttributeParser
     public function parse(NodeList &$nodeList): void
     {
         foreach($nodeList as $node) {
-            $parsedExpression = $this->parseExpression($node->getAttribute('t-inner-text'), serialize: true);
+            $parsedExpression = $this->parseExpression($node->getAttribute('inner-text'), serialize: true);
             $node->textContent = $parsedExpression;
-            $node->removeAttribute('t-inner-text');
+            $node->removeAttribute('inner-text');
         }
     }
 }
