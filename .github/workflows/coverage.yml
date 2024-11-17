@@ -20,7 +20,10 @@ jobs:
           coverage: xdebug
 
       - name: Set-up Composer
-        uses: php-actions/composer@v6
+        run: |
+          php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+          php composer-setup.php
+          composer.phar install
 
       - name: Run tests and collect coverage
         run: ./vendor/bin/phpunit tests --coverage-clover coverage.xml tests
