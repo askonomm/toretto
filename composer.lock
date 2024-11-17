@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "725ed567bf0044e0f6d5a5141b2f38c6",
+    "content-hash": "8f5411f799bc94e2d6cede419d894857",
     "packages": [
         {
             "name": "psr/log",
@@ -58,6 +58,57 @@
         }
     ],
     "packages-dev": [
+        {
+            "name": "asko/loggr",
+            "version": "v2.0.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/askonomm/loggr.git",
+                "reference": "d226bade3fa35c40f4c242575499f14c470bde91"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/askonomm/loggr/zipball/d226bade3fa35c40f4c242575499f14c470bde91",
+                "reference": "d226bade3fa35c40f4c242575499f14c470bde91",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.3",
+                "psr/log": "^3.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.6",
+                "phpstan/extension-installer": "^1.4",
+                "phpstan/phpstan": "^2.0",
+                "phpstan/phpstan-mockery": "^2.0",
+                "phpunit/phpunit": "11"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Asko\\Loggr\\": "src/"
+                },
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Asko Nomm",
+                    "email": "asko@faultd.com"
+                }
+            ],
+            "description": "An extendable logging utility class with built-in support for various logging formats.",
+            "support": {
+                "issues": "https://github.com/askonomm/loggr/issues",
+                "source": "https://github.com/askonomm/loggr/tree/v2.0.6"
+            },
+            "time": "2024-11-17T12:47:14+00:00"
+        },
         {
             "name": "myclabs/deep-copy",
             "version": "1.12.1",

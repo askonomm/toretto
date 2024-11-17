@@ -28,7 +28,8 @@
   },
   "require-dev": {
     "phpunit/phpunit": "^11",
-    "phpstan/phpstan": "^2.0"
+    "phpstan/phpstan": "^2.0",
+    "asko/loggr": "^2.0"
   },
   "config": {
     "allow-plugins": {

@@ -20,22 +20,22 @@ Still very much a work in progress, and specification may change.
 ```html
 <!DOCTYPE html>
 <html>
-    <head>
-        <title inner-text="{title}"></title>
-    </head>
-    <body>
-        <h1 inner-text="{title}"></h1>
-        
-        <div class="posts" if="posts">
-            <div foreach="posts as post">
-                <h2 class="post-title">
-                    <a :href="/blog/{post.url}" inner-text="{post.title | capitalize}"></a>
-                </h2>
-                <div class="post-date" inner-text="{post.date | date:yyyy-MM-dd}"></div>
-                <div class="post-content" inner-html="{post.body}"></div>
-            </div>
-        </div>
-    </body>
+<head>
+    <title inner-text="{title}"></title>
+</head>
+<body>
+<h1 inner-text="{title}"></h1>
+
+<div class="posts" if="posts">
+    <div foreach="posts as post">
+        <h2 class="post-title">
+            <a :href="/blog/{post.url}" inner-text="{post.title | capitalize}"></a>
+        </h2>
+        <div class="post-date" inner-text="{post.date | date:yyyy-MM-dd}"></div>
+        <div class="post-content" inner-html="{post.body}"></div>
+    </div>
+</div>
+</body>
 </html>
 ```
 

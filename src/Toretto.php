@@ -21,19 +21,32 @@ use const Dom\HTML_NO_DEFAULT_NS;
 class Toretto
 {
     /**
+     * Default list of attribute parsers.
+     *
+     * @var List<class-string> $defaultAttributeParsers
+     */
+    private array $defaultAttributeParsers = [
+        GenericValueAttributeParser::class,
+        IfAttributeParser::class,
+        UnlessAttributeParser::class,
+        InnerTextAttributeParser::class,
+        InnerHtmlAttributeParser::class,
+    ];
+
+    /**
      * A list of attribute parsers.
      *
      * @var List<BaseAttributeParser> $attributeParsers
      */
-    public array $attributeParsers {
-        get {
-            return [
-                new GenericValueAttributeParser(),
-                new InnerHtmlAttributeParser(),
-                new InnerTextAttributeParser(),
-                new IfAttributeParser(),
-                new UnlessAttributeParser(),
-            ];
+    public array $attributeParsers = [] {
+        set {
+            foreach($value as $parser) {
+                if (!is_subclass_of($parser, BaseAttributeParser::class)) {
+                    throw new \InvalidArgumentException('Attribute parser must be a subclass of BaseAttributeParser.');
+                }
+            }
+
+            $this->attributeParsers = $value;
         }
     }
 
@@ -69,11 +82,16 @@ class Toretto
      */
     public function __construct(string $template, array $data = [])
     {
+        // Set attribute parsers
+        $this->attributeParsers = array_map(fn($parser) => new $parser, $this->defaultAttributeParsers);
+
+        // Set DOM
         $this->dom = HTMLDocument::createFromString(
             source: $template,
             options: HTML_NO_DEFAULT_NS | LIBXML_NOERROR | LIBXML_HTML_NOIMPLIED
         );
 
+        // Set data
         $this->data = $data;
     }
 
@@ -100,15 +118,19 @@ class Toretto
             try {
                 $attributes = new \ReflectionClass($parser)->getAttributes(Query::class);
 
-                if (empty($attributes)) continue;
+                if (empty($attributes)) throw new \InvalidArgumentException('Query attribute is missing.');
 
-                $query = $attributes[0]->newInstance()->query;
+                $query = $attributes[0]->newInstance()?->query;
+
+                if (empty($query)) throw new \InvalidArgumentException('Query attribute is empty.');
+
                 $nodes = $xpath->query($query);
 
                 if ($nodes instanceof NodeList) {
                     $parser->parse($nodes);
                 }
             } catch (\Throwable $e) {
+                var_dump($e);
                 $this->logger?->error($e->getMessage());
             }
         }
@@ -117,18 +139,12 @@ class Toretto
     /**
      * Converts the DOM object to an HTML string representation.
      *
-     * @return string The HTML string generated from the DOM object.
+     * @return string|false The HTML string generated from the DOM object.
      */
-    public function toHtml(): string
+    public function toHtml(): string|false
     {
         $this->parseAttributes();
 
-        $html = $this->dom->saveHTML();
-
-        if (is_string($html)) {
-            return $html;
-        }
-
-        return '';
+        return $this->dom->saveHTML();
     }
 }
