@@ -1,5 +1,7 @@
 # Toretto
 
+[![codecov](https://codecov.io/gh/askonomm/toretto/graph/badge.svg?token=nYfiv0Lmmk)](https://codecov.io/gh/askonomm/toretto)
+
 A simple and extendable templating library built on top of the new `\DOM\HTMLDocument` of PHP 8.4. 
 Still very much a work in progress, and specification may change. 
 
