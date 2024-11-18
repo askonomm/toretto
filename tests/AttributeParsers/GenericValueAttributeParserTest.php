@@ -30,4 +30,16 @@ class GenericValueAttributeParserTest extends TestCase
         $toretto = new Toretto("<div :foo=\"Hello {foo} and {foo}\"></div>", ["foo" => "bar"]);
         $this->assertEquals("<div foo=\"Hello bar and bar\"></div>", $toretto->toHtml());
     }
+
+    public function testInterpolationWithModifiersParse(): void
+    {
+        $toretto = new Toretto("<div :foo=\"Hello {foo | truncate:1}\"></div>", ["foo" => "bar"]);
+        $this->assertEquals("<div foo=\"Hello b...\"></div>", $toretto->toHtml());
+    }
+
+    public function testInterpolationWithModifiersOnlyParse(): void
+    {
+        $toretto = new Toretto("<div :foo=\"foo | truncate:1\"></div>", ["foo" => "bar"]);
+        $this->assertEquals("<div foo=\"b...\"></div>", $toretto->toHtml());
+    }
 }
