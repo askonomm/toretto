@@ -50,4 +50,37 @@ class ForeachAttributeParserTest extends TestCase
         $result = $toretto->toHtml();
         $this->assertEquals("<div><div>0 and test</div><div>1 and test2</div></div>", $result);
     }
+
+    public function testParseEmptyCollection(): void
+    {
+        $toretto = new Toretto(
+            template: '<div foreach="test as item" inner-text="item"></div>',
+            data: ['test' => []]
+        );
+
+        $result = $toretto->toHtml();
+        $this->assertEquals("", $result);
+    }
+
+    public function testParseEmptyIterExpression(): void
+    {
+        $toretto = new Toretto(
+            template: '<div foreach="" inner-text="item"></div>',
+            data: ['test' => []]
+        );
+
+        $result = $toretto->toHtml();
+        $this->assertEquals("<!--No iter expression in foreach attribute.-->", $result);
+    }
+
+    public function testParseInvalidIterExpression(): void
+    {
+        $toretto = new Toretto(
+            template: '<div foreach="@asdasd////" inner-text="item"></div>',
+            data: ['test' => []]
+        );
+
+        $result = $toretto->toHtml();
+        $this->assertEquals("<!--Invalid iter expression.-->", $result);
+    }
 }

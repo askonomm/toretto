@@ -28,10 +28,10 @@ class Toretto
      * @var List<class-string> $defaultAttributeParsers
      */
     private array $defaultAttributeParsers = [
+        ForeachAttributeParser::class,
         GenericValueAttributeParser::class,
         IfAttributeParser::class,
         UnlessAttributeParser::class,
-        ForeachAttributeParser::class,
         InnerTextAttributeParser::class,
         InnerHtmlAttributeParser::class,
     ];

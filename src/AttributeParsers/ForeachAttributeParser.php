@@ -21,25 +21,31 @@ class ForeachAttributeParser extends BaseAttributeParser
         foreach($nodeList as $node) {
             $iter_expression = trim($node->getAttribute('foreach'));
 
+            // There is no iter expression.
             if (empty($iter_expression)) {
+                $this->setError($node, 'No iter expression in foreach attribute.');
                 continue;
             }
 
             $parsed_iter_expression = $this->parseIterExpression($iter_expression);
 
+            // Could not parse iter expression.
             if (empty($parsed_iter_expression)) {
+                $this->setError($node, 'Invalid iter expression.');
                 continue;
             }
 
             $collection = $this->parseExpression($parsed_iter_expression['collection']);
 
+            // Nothing to loop over.
             if (empty($collection)) {
-                continue;
+                $node->parentNode->removeChild($node);
             }
 
-            $node->removeAttribute('foreach');
             $asKey = $parsed_iter_expression['asKey'];
             $asVar = $parsed_iter_expression['asVar'];
+
+            $node->removeAttribute('foreach');
 
             // If the node is the root node, we can't add adjacent elements, because
             // it results in "Cannot have more than one element child in a document" error,
@@ -80,8 +86,13 @@ class ForeachAttributeParser extends BaseAttributeParser
         $node->parentNode->removeChild($node);
     }
 
-    private function parseIterExpression(string $expression): array
+    private function parseIterExpression(string $expression): ?array
     {
+        // only allow alphanumeric and :
+        if (!preg_match('/^[\w+:\s]+$/', $expression)) {
+            return null;
+        }
+
         $parts = array_map(fn($p) => trim($p), explode(' ', $expression));
         $parts = array_values(array_filter($parts, fn($p) => !empty($p)));
 
@@ -98,25 +109,35 @@ class ForeachAttributeParser extends BaseAttributeParser
         // as {something} requires three parts where the second is the operator
         if (count($parts) >= 3) {
             $rest = implode('', array_slice($parts, 2));
-            $as_parts = explode(':', $rest);
+            $asParts = explode(':', $rest);
 
-            if (count($as_parts) === 1) {
+            if (count($asParts) === 1) {
                 return [
                     'collection' => $parts[0],
                     'operator' => $parts[1],
                     'asKey' => null,
-                    'asVar' => $as_parts[0],
+                    'asVar' => $asParts[0],
                 ];
             }
 
             return [
                 'collection' => $parts[0],
                 'operator' => $parts[1],
-                'asKey' => $as_parts[0],
-                'asVar' => $as_parts[1],
+                'asKey' => $asParts[0],
+                'asVar' => $asParts[1],
             ];
         }
 
-        return [];
+        return null;
+    }
+
+    private function setError(Node &$node, string $message): void
+    {
+        try {
+            $errorNode = $node->ownerDocument->createComment($message);
+            $node->parentNode->replaceChild($errorNode, $node);
+        } catch (\Throwable $th) {
+            var_dump($th);
+        }
     }
 }
