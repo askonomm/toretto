@@ -9,6 +9,8 @@ use DOM\NodeList;
 
 abstract class BaseAttributeParser
 {
+    public array $data;
+
     public ExpressionParser $expressionParser;
 
     /**
