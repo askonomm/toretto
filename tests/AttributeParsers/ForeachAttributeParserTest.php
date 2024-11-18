@@ -83,4 +83,15 @@ class ForeachAttributeParserTest extends TestCase
         $result = $toretto->toHtml();
         $this->assertEquals("<!--Invalid iter expression.-->", $result);
     }
+
+    public function testParseWithExpressionModifiers(): void
+    {
+        $toretto = new Toretto(
+            template: '<div foreach="items | truncate:2 as item" inner-text="item"></div>',
+            data: ['items' => ['test', 'test2', 'test3', 'test4']]
+        );
+
+        $result = $toretto->toHtml();
+        $this->assertEquals("<div><div>test</div><div>test2</div></div>", $result);
+    }
 }
