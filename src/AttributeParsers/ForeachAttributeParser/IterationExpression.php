@@ -2,7 +2,7 @@
 
 namespace Asko\Toretto\AttributeParsers\ForeachAttributeParser;
 
-class IterationExpression
+readonly class IterationExpression
 {
     public function __construct(
         public ?array $collection = [],
