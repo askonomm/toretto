@@ -126,7 +126,7 @@ Results in:
 
 ### `:*` (Generic Value Attributes)
 
-You can use the `:*` attribute to set any attribute on an element to the interpolated value of the attribute.
+You can use the `:*` attribute to set any attribute on an element to the interpolated value of the generic value attribute.
 
 For example, to set the `href` attribute of an element, you can use the `:href` attribute:
 
