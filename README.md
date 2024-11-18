@@ -50,7 +50,7 @@ A simple example of how to use Toretto with default configuration looks like thi
 ```php
 use Asko\Toretto;
 
-$toretto = new Toretto('<p t-inner-text="Hello {who}"></p>', ['who' => 'World']);
+$toretto = new Toretto('<p inner-text="Hello {who}"></p>', ['who' => 'World']);
 $html = $toretto->toHtml(); // <p>Hello World</p>
 ```
 
@@ -178,7 +178,7 @@ when creating a new instance of the `Toretto` class, like so:
 use Asko\Toretto;
 use Asko\Toretto\AttributeParsers;
 
-$toretto = new Toretto('<p t-inner-text="Hello {who}"></p>', ['who' => 'World']);
+$toretto = new Toretto('<p inner-text="Hello {who}"></p>', ['who' => 'World']);
 $toretto->attributeParsers = [
     new InnerTextAttributeParser(),
     ...
@@ -194,7 +194,7 @@ use Asko\Toretto\Core\Attributes\Query;
 use Dom\Node;
 use Dom\NodeList;
 
-#[Query('//*[@t-inner-text]')]
+#[Query('//*[@inner-text]')]
 class InnerTextAttributeParser extends BaseAttributeParser
 {
     /**
@@ -205,9 +205,9 @@ class InnerTextAttributeParser extends BaseAttributeParser
     public function parse(NodeList &$nodeList): void
     {
         foreach($nodeList as $node) {
-            $parsedExpression = $this->parseExpression($node->getAttribute('t-inner-text'), serialize: true);
+            $parsedExpression = $this->parseExpression($node->getAttribute('inner-text'), serialize: true);
             $node->textContent = $parsedExpression;
-            $node->removeAttribute('t-inner-text');
+            $node->removeAttribute('inner-text');
         }
     }
 }
