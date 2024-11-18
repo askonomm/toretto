@@ -97,7 +97,7 @@ class ForeachAttributeParser extends BaseAttributeParser
         $parts = array_values(array_filter($parts, fn($p) => !empty($p)));
 
         // Only collection exists
-        if (count($parts) === 1) {
+        if (count($parts) < 3) {
             return [
                 'collection' => $parts[0],
                 'operator' => null,
@@ -107,37 +107,29 @@ class ForeachAttributeParser extends BaseAttributeParser
         }
 
         // as {something} requires three parts where the second is the operator
-        if (count($parts) >= 3) {
-            $rest = implode('', array_slice($parts, 2));
-            $asParts = explode(':', $rest);
+        $rest = implode('', array_slice($parts, 2));
+        $asParts = explode(':', $rest);
 
-            if (count($asParts) === 1) {
-                return [
-                    'collection' => $parts[0],
-                    'operator' => $parts[1],
-                    'asKey' => null,
-                    'asVar' => $asParts[0],
-                ];
-            }
-
+        if (count($asParts) === 1) {
             return [
                 'collection' => $parts[0],
                 'operator' => $parts[1],
-                'asKey' => $asParts[0],
-                'asVar' => $asParts[1],
+                'asKey' => null,
+                'asVar' => $asParts[0],
             ];
         }
 
-        return null;
+        return [
+            'collection' => $parts[0],
+            'operator' => $parts[1],
+            'asKey' => $asParts[0],
+            'asVar' => $asParts[1],
+        ];
     }
 
     private function setError(Node &$node, string $message): void
     {
-        try {
-            $errorNode = $node->ownerDocument->createComment($message);
-            $node->parentNode->replaceChild($errorNode, $node);
-        } catch (\Throwable $th) {
-            var_dump($th);
-        }
+        $errorNode = $node->ownerDocument->createComment($message);
+        $node->parentNode->replaceChild($errorNode, $node);
     }
 }
