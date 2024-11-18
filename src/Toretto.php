@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Asko\Toretto;
 
 use Asko\Toretto\AttributeParsers\BaseAttributeParser;
+use Asko\Toretto\AttributeParsers\ForeachAttributeParser;
 use Asko\Toretto\AttributeParsers\GenericValueAttributeParser;
 use Asko\Toretto\AttributeParsers\IfAttributeParser;
 use Asko\Toretto\AttributeParsers\InnerHtmlAttributeParser;
@@ -12,6 +13,7 @@ use Asko\Toretto\AttributeParsers\InnerTextAttributeParser;
 use Asko\Toretto\AttributeParsers\UnlessAttributeParser;
 use Asko\Toretto\Core\Attributes\Query;
 use Asko\Toretto\ExpressionModifiers\TruncateExpressionModifier;
+use Dom\Element;
 use Dom\HTMLDocument;
 use DOM\NodeList;
 use DOM\XPath;
@@ -26,6 +28,7 @@ class Toretto
      * @var List<class-string> $defaultAttributeParsers
      */
     private array $defaultAttributeParsers = [
+        ForeachAttributeParser::class,
         GenericValueAttributeParser::class,
         IfAttributeParser::class,
         UnlessAttributeParser::class,
@@ -111,6 +114,7 @@ class Toretto
 
         foreach($this->attributeParsers as $attributeParser) {
             $parser = new $attributeParser();
+            $parser->data = $this->data;
             $parser->expressionParser = new ExpressionParser();
             $parser->expressionParser->data = $this->data;
             $parser->expressionParser->expressionModifiers = $this->expressionModifiers;
@@ -130,7 +134,6 @@ class Toretto
                     $parser->parse($nodes);
                 }
             } catch (\Throwable $e) {
-                var_dump($e);
                 $this->logger?->error($e->getMessage());
             }
         }
@@ -145,6 +148,13 @@ class Toretto
     {
         $this->parseAttributes();
 
-        return $this->dom->saveHTML();
+        return $this->dom->saveHtml();
+    }
+
+    public function toHtmlElement(): Element|false
+    {
+        $this->parseAttributes();
+
+        return $this->dom->documentElement;
     }
 }

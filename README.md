@@ -124,6 +124,36 @@ Results in:
 <!-- Empty -->
 ```
 
+### `foreach`
+
+Loops anything iterable. 
+
+For example, to loop over a collection of `posts` and then use `post` as the variable of each iteration, you can do something 
+like this:
+
+```php
+<div foreach="posts as post">
+    <h2 inner-text="post.title"></h2>
+</div>
+```
+
+If you do not care about using any of the iteration data, you can also entirely omit `as ...` from the iterative expression, 
+like so:
+
+```php
+<div foreach="posts">
+    ...
+</div>
+```
+
+And, you can also assign the key of the iteration to a variable, like so:
+
+```php
+<div foreach="posts as index:post">
+    <h2 :class="post-{post.index}" inner-text="post.title"></h2>
+</div>
+```
+
 ### `:*` (Generic Value Attributes)
 
 You can use the `:*` attribute to set any attribute on an element to the interpolated value of the generic value attribute.
@@ -223,6 +253,7 @@ All attributes are matched via XTag queries, and you can match your attribute pa
 - `Asko\Toretto\AttributeParsers\UnlessAttributeParser` - Parser the `unless` attributes.
 - `Asko\Toretto\AttributeParsers\InnerHtmlAttributeParser` - Parser the `inner-html` attributes.
 - `Asko\Toretto\AttributeParsers\InnerTextAttributeParser` - Parser the `inner-text` attributes.
+- `Asko\Toretto\AttributeParsers\ForeachAttributeParser` - Parses the `foreach` attributes.
 
 ### Expression Modifiers
 
