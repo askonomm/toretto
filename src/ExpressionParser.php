@@ -60,7 +60,6 @@ class ExpressionParser
             is_bool($value) => $value ? 'true' : 'false',
             is_null($value) => 'null',
             is_array($value), is_object($value) => json_encode($value),
-            default => ''
         };
 
         return $result;

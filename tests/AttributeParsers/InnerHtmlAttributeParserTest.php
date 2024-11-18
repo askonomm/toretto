@@ -5,7 +5,7 @@ namespace Asko\Toretto\Tests\AttributeParsers;
 use Asko\Toretto\Toretto;
 use PHPUnit\Framework\TestCase;
 
-class InnerHtmlAttributeParser extends TestCase
+class InnerHtmlAttributeParserTest extends TestCase
 {
     public function testParse(): void
     {
