@@ -269,4 +269,4 @@ All expression modifiers need to have a name, and you can name your modifier wit
 
 #### List of built-in expression modifiers
 
-- `Asko\Toretto\ExpressionModiifers\TruncateExpressionModiifer` - Truncates a value (both strings and collections).
+- `Asko\Toretto\ExpressionModifiers\TruncateExpressionModiifer` - Truncates the value (both strings and collections).
