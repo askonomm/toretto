@@ -100,23 +100,22 @@ class ForeachAttributeParser extends BaseAttributeParser
     private function parseIterExpression(string $expression): ?IterationExpression
     {
         // only allow alphanumeric, space and :
-        if (!preg_match('/^[\w+:\s]+$/', $expression)) {
+        if (!preg_match('/^[\w+:|\s]+$/', $expression)) {
             return null;
         }
 
-        $parts = array_map(fn($p) => trim($p), explode(' ', $expression));
+        $parts = array_map(fn($p) => trim($p), explode(' as ', $expression));
         $parts = array_values(array_filter($parts, fn($p) => !empty($p)));
 
-        // Only collection exists
-        if (count($parts) < 3) {
+        // Only left-side of operator exists
+        if (count($parts) === 1) {
             return new IterationExpression(
                 collection: $this->parseExpression($parts[0])
             );
         }
 
-        // as {something} requires three parts where the second is the operator
-        $rest = implode('', array_slice($parts, 2));
-        $asParts = explode(':', $rest);
+        // The right-side of operator exists
+        $asParts = explode(':', $parts[1]);
 
         if (count($asParts) === 1) {
             return new IterationExpression(
