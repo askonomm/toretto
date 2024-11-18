@@ -2,6 +2,7 @@
 
 namespace Asko\Toretto\AttributeParsers;
 
+use Asko\Toretto\AttributeParsers\ForeachAttributeParser\IterationExpression;
 use Asko\Toretto\Core\Attributes\Query;
 use Asko\Toretto\Toretto;
 use Dom\AdjacentPosition;
@@ -12,7 +13,9 @@ use DOM\NodeList;
 class ForeachAttributeParser extends BaseAttributeParser
 {
     /**
-     * @param NodeList<Node> $nodeList
+     * Parses a NodeList and processes each Node that contains a 'foreach' attribute.
+     *
+     * @param NodeList<Node> $nodeList The list of nodes to be parsed.
      * @return void
      */
     #[\Override]
@@ -30,20 +33,15 @@ class ForeachAttributeParser extends BaseAttributeParser
             $parsed_iter_expression = $this->parseIterExpression($iter_expression);
 
             // Could not parse iter expression.
-            if (empty($parsed_iter_expression)) {
+            if (!$parsed_iter_expression) {
                 $this->setError($node, 'Invalid iter expression.');
                 continue;
             }
 
-            $collection = $this->parseExpression($parsed_iter_expression['collection']);
-
             // Nothing to loop over.
-            if (empty($collection)) {
+            if (empty($parsed_iter_expression->collection)) {
                 $node->parentNode->removeChild($node);
             }
-
-            $asKey = $parsed_iter_expression['asKey'];
-            $asVar = $parsed_iter_expression['asVar'];
 
             $node->removeAttribute('foreach');
 
@@ -55,24 +53,31 @@ class ForeachAttributeParser extends BaseAttributeParser
                 $cloned_node = $node->cloneNode(true);
                 $parent->appendChild($cloned_node);
                 $node->parentNode->replaceChild($parent, $node);
-                $this->loop($cloned_node, $collection, $asKey, $asVar);
+                $this->loop($cloned_node, $parsed_iter_expression);
             } else {
-                $this->loop($node, $collection, $asKey, $asVar);
+                $this->loop($node, $parsed_iter_expression);
             }
         }
     }
 
-    private function loop(Node $node, array $collection, ?string $asKey = null, ?string $asVar = null): void
+    /**
+     * Processes each item in the given collection, performing transformations and inserting resulting HTML elements.
+     *
+     * @param Node $node The DOM node which will be processed.
+     * @param IterationExpression $iterationExpression
+     * @return void
+     */
+    private function loop(Node $node, IterationExpression $iterationExpression): void
     {
-        foreach ($collection as $key => $value) {
+        foreach ($iterationExpression->collection as $key => $value) {
             $data = $this->data;
 
-            if ($asKey !== null) {
-                $data[$asKey] = $key;
+            if ($iterationExpression->asKey !== null) {
+                $data[$iterationExpression->asKey] = $key;
             }
 
-            if ($asVar !== null) {
-                $data[$asVar] = $value;
+            if ($iterationExpression->asVar !== null) {
+                $data[$iterationExpression->asVar] = $value;
             }
 
             $toretto = new Toretto($node->ownerDocument->saveHtml($node), $data);
@@ -86,9 +91,15 @@ class ForeachAttributeParser extends BaseAttributeParser
         $node->parentNode->removeChild($node);
     }
 
-    private function parseIterExpression(string $expression): ?array
+    /**
+     * Parses an iteration expression into its components.
+     *
+     * @param string $expression The iteration expression to parse.
+     * @return array|null Returns an associative array.
+     */
+    private function parseIterExpression(string $expression): ?IterationExpression
     {
-        // only allow alphanumeric and :
+        // only allow alphanumeric, space and :
         if (!preg_match('/^[\w+:\s]+$/', $expression)) {
             return null;
         }
@@ -98,12 +109,9 @@ class ForeachAttributeParser extends BaseAttributeParser
 
         // Only collection exists
         if (count($parts) < 3) {
-            return [
-                'collection' => $parts[0],
-                'operator' => null,
-                'asKey' => null,
-                'asVar' => null,
-            ];
+            return new IterationExpression(
+                collection: $this->parseExpression($parts[0])
+            );
         }
 
         // as {something} requires three parts where the second is the operator
@@ -111,22 +119,26 @@ class ForeachAttributeParser extends BaseAttributeParser
         $asParts = explode(':', $rest);
 
         if (count($asParts) === 1) {
-            return [
-                'collection' => $parts[0],
-                'operator' => $parts[1],
-                'asKey' => null,
-                'asVar' => $asParts[0],
-            ];
+            return new IterationExpression(
+                collection:$this->parseExpression($parts[0]),
+                asVar: $asParts[0],
+            );
         }
 
-        return [
-            'collection' => $parts[0],
-            'operator' => $parts[1],
-            'asKey' => $asParts[0],
-            'asVar' => $asParts[1],
-        ];
+        return new IterationExpression(
+            collection: $this->parseExpression($parts[0]),
+            asKey:  $asParts[0],
+            asVar: $asParts[1],
+        );
     }
 
+    /**
+     * Replaces the given node with a comment node containing an error message.
+     *
+     * @param Node $node The node to be replaced with an error comment. This parameter is passed by reference.
+     * @param string $message The error message to be included in the comment node.
+     * @return void
+     */
     private function setError(Node &$node, string $message): void
     {
         $errorNode = $node->ownerDocument->createComment($message);
